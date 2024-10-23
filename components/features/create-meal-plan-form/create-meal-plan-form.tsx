@@ -1,6 +1,4 @@
 "use client";
-
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 
@@ -10,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { trpc } from "@/server/client";
 import { Goal, Diet } from ".";
 
-import { CompletionModel, DailyMealPlan } from "@/components/shared/types";
+import { CompletionModel } from "@/components/shared/types";
 
 import {
   Button,
@@ -36,7 +34,7 @@ import { addDailyMealPlan } from "@/app/store/mealPlannerSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
-import { ArrowRight } from "lucide-react";
+import { AlertCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { maxPlans } from "../MealPlanCapacity/planCapacity";
 
@@ -93,17 +91,18 @@ export default function CreateMealPlanForm() {
       router.push(`/meal-plans`);
     } catch (e) {
       console.error("Error fetching AI completion:", e);
-      console.log("restarting");
-
-      const completion = await getCompletion.mutateAsync({
-        prompt: `${prompt}`,
-        model: CompletionModel.GPT_3_5_TURBO,
-      });
-      dispatch(addDailyMealPlan(JSON.parse(completion)));
-      router.push(`/meal-plans`);
+      throw e;
     }
   }
-
+  console.log(
+    dailyMealPlans.length < maxPlans || dailyMealPlans.length === 0,
+    "dailyMealPlans.length > maxPlans || dailyMealPlans.length === 0"
+  );
+  console.log(
+    dailyMealPlans.length > maxPlans,
+    "dailyMealPlans.length > maxPlans"
+  );
+  const planCount = dailyMealPlans.length;
   return (
     <main className="flex flex-col items-center justify-center gap-5 p-10 py-24">
       {getCompletion.isPending && (
@@ -164,7 +163,7 @@ export default function CreateMealPlanForm() {
                 name="gender"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>gender</FormLabel>
+                    <FormLabel>Gender</FormLabel>
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}
@@ -365,14 +364,16 @@ export default function CreateMealPlanForm() {
               <div className="col-span-full flex w-full justify-center">
                 {dailyMealPlans.length < maxPlans ||
                   (dailyMealPlans.length === maxPlans && (
-                    <Link href={"/meal-plans"}>
-                      <Button type="button">
-                        Your already created have max meals
-                        <ArrowRight />
-                      </Button>
-                    </Link>
+                    <div className="flex flex-col items-center gap-2">
+                      <p className="flex gap-1 text-sm"><AlertCircle className="size-5 text-yellow-500" />You&lsquo;ve reached the maximum number of plans.</p>
+                      <Link href={"/meal-plans"}>
+                        <Button type="button">
+                          Go To My Plans<ArrowRight className="ml-2" />
+                        </Button>
+                      </Link>
+                    </div>
                   ))}{" "}
-                {dailyMealPlans.length > maxPlans && (
+                {planCount < maxPlans && (
                   <Button type="submit">Get your meal plan!</Button>
                 )}
               </div>

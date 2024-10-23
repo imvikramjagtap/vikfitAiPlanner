@@ -8,18 +8,18 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import Link from 'next/link';
 import { Progress } from "@/components/ui/progress/progress";
-export const maxPlans = 2;
+export const maxPlans = 3;
 
 export function MealPlanLimitations() {
   const dailyMealPlans = useSelector((state: RootState) => state.mealPlanner.dailyMealPlans);
   const planCount = dailyMealPlans.length;
 
   return (
-    <Card className="w-full max-w-md mx-auto mt-8 bg-card">
+    <Card className="mx-auto mt-8 w-full max-w-md bg-card">
       <CardHeader>
         <CardTitle className="text-2xl font-bold">Meal Plan Capacity</CardTitle>
         <CardDescription>
-          You can create up to two personalized diet plans.
+          You can create up to three personalized diet plans.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -30,9 +30,9 @@ export function MealPlanLimitations() {
           </p>
           <div className="flex items-center space-x-2">
             {planCount < maxPlans ? (
-              <AlertCircle className="h-5 w-5 text-yellow-500" />
+              <AlertCircle className="size-5 text-yellow-500" />
             ) : (
-              <CheckCircle2 className="h-5 w-5 text-green-500" />
+              <CheckCircle2 className="size-5 text-green-500" />
             )}
             <span className="text-sm font-medium">
               {planCount < maxPlans
